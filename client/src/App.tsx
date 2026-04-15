@@ -3,9 +3,12 @@ import IssueForm from './features/issue-submission/IssueForm';
 
 export default function App() {
   return (
-    <div>
-      <nav>
-        <Link to="/">Map</Link> | <Link to="/report">Report Issue</Link> |{' '}
+    <>
+      <nav className="app-nav">
+        <Link to="/">Map</Link>
+        <span className="app-nav-divider" aria-hidden />
+        <Link to="/report">Report Issue</Link>
+        <span className="app-nav-divider" aria-hidden />
         <Link to="/staff/login">Staff Login</Link>
       </nav>
       <Routes>
@@ -16,6 +19,6 @@ export default function App() {
         <Route path="/staff/issues/:id" element={<h1>Issue Detail</h1>} />
         <Route path="/admin/users" element={<h1>User Management</h1>} />
       </Routes>
-    </div>
+    </>
   );
 }
