@@ -1,5 +1,5 @@
 - ~~0001 - As a citizen I want to submit an issue report without creating an account~~
-- 0002 - As a citizen I want to upload a photo of the issue (JPEG/PNG, max 5 MB)
+- ~~0002 - As a citizen I want to upload a photo of the issue (JPEG/PNG, max 5 MB)~~
 - 0003 - As a citizen I want to use my phone camera to take a photo when submitting an issue
 - 0004 - As a citizen I want to write a free-text description of the issue (up to 4096 characters)
 - 0005 - As a citizen I want my GPS location to be automatically detected when submitting an issue

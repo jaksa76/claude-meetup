@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 import {
@@ -6,6 +6,7 @@ import {
   listOpenIssues,
   getIssueByTrackingCode,
 } from './issues.service.js';
+import { upload } from '../../_shared/upload.js';
 
 const submitLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -19,22 +20,36 @@ const router = Router();
 
 const createIssueSchema = z.object({
   description: z.string().min(1).max(4096),
-  latitude: z.number(),
-  longitude: z.number(),
+  latitude: z.coerce.number(),
+  longitude: z.coerce.number(),
   contactPhone: z.string().optional(),
 });
 
-router.post('/', submitLimiter, async (req: Request, res: Response) => {
-  const parsed = createIssueSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.flatten() });
-    return;
-  }
+router.post(
+  '/',
+  submitLimiter,
+  (req: Request, res: Response, next: NextFunction) => {
+    upload.single('photo')(req, res, (err) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      next();
+    });
+  },
+  async (req: Request, res: Response) => {
+    const parsed = createIssueSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.flatten() });
+      return;
+    }
 
-  const issue = createIssue(parsed.data);
+    const photoPath = req.file ? req.file.filename : undefined;
+    const issue = createIssue({ ...parsed.data, photoPath });
 
-  res.status(201).json({ trackingCode: issue.trackingCode });
-});
+    res.status(201).json({ trackingCode: issue.trackingCode });
+  },
+);
 
 router.get('/', (_req: Request, res: Response) => {
   const issues = listOpenIssues().map(({ id, latitude, longitude, category, status, createdAt }) => ({
