@@ -16,7 +16,8 @@ export default function IssueForm() {
   const [trackingCode, setTrackingCode] = useState('');
   const [formState, setFormState] = useState<FormState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     setPhotoError('');
@@ -25,21 +26,26 @@ export default function IssueForm() {
 
     if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
       setPhotoError('Only JPEG and PNG images are allowed.');
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      clearInputs();
       return;
     }
     if (file.size > MAX_BYTES) {
       setPhotoError('Photo must be 5 MB or smaller.');
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      clearInputs();
       return;
     }
     setPhoto(file);
   }
 
+  function clearInputs() {
+    if (cameraInputRef.current) cameraInputRef.current.value = '';
+    if (galleryInputRef.current) galleryInputRef.current.value = '';
+  }
+
   function removePhoto() {
     setPhoto(null);
     setPhotoError('');
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    clearInputs();
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -76,7 +82,7 @@ export default function IssueForm() {
     setPhotoError('');
     setTrackingCode('');
     setErrorMessage('');
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    clearInputs();
   }
 
   return (
@@ -99,46 +105,78 @@ export default function IssueForm() {
             <p className="issue-form-subtitle">Add a photo of the problem you've spotted.</p>
 
             <form onSubmit={handleSubmit}>
-              <div className={`photo-zone${photo ? ' has-photo' : ''}`}>
-                <input
-                  id="photo"
-                  type="file"
-                  accept="image/jpeg,image/png"
-                  capture="environment"
-                  ref={fileInputRef}
-                  onChange={handlePhotoChange}
-                  aria-label="Upload a photo"
-                />
-                {photo ? (
-                  <>
-                    <img
-                      className="photo-preview"
-                      src={URL.createObjectURL(photo)}
-                      alt="Preview of selected photo"
-                    />
-                    <div className="photo-preview-bar">
-                      <span className="photo-preview-name">{photo.name}</span>
-                      <button
-                        type="button"
-                        className="photo-remove-btn"
-                        onClick={removePhoto}
-                        aria-label="Remove photo"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <svg className="photo-zone-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              {/* Hidden inputs — one for camera, one for gallery */}
+              <input
+                data-testid="camera-input"
+                type="file"
+                accept="image/jpeg,image/png"
+                capture="environment"
+                ref={cameraInputRef}
+                onChange={handlePhotoChange}
+                aria-label="Take a photo with camera"
+                className="photo-hidden-input"
+              />
+              <input
+                data-testid="gallery-input"
+                type="file"
+                accept="image/jpeg,image/png"
+                ref={galleryInputRef}
+                onChange={handlePhotoChange}
+                aria-label="Choose a photo from gallery"
+                className="photo-hidden-input"
+              />
+
+              {photo ? (
+                <div className="photo-zone has-photo">
+                  <img
+                    className="photo-preview"
+                    src={URL.createObjectURL(photo)}
+                    alt="Preview of selected photo"
+                  />
+                  <div className="photo-preview-bar">
+                    <span className="photo-preview-name">{photo.name}</span>
+                    <button
+                      type="button"
+                      className="photo-remove-btn"
+                      onClick={removePhoto}
+                      aria-label="Remove photo"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="photo-choice">
+                  <button
+                    type="button"
+                    className="photo-choice-btn"
+                    onClick={() => cameraInputRef.current?.click()}
+                    aria-label="Take a photo with your camera"
+                  >
+                    {/* Camera icon */}
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                       <circle cx="12" cy="13" r="4"/>
                     </svg>
-                    <div className="photo-zone-label">Tap to add a photo</div>
-                    <div className="photo-zone-hint">JPEG or PNG · max 5 MB</div>
-                  </>
-                )}
-              </div>
+                    <span>Take Photo</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="photo-choice-btn"
+                    onClick={() => galleryInputRef.current?.click()}
+                    aria-label="Choose a photo from your gallery"
+                  >
+                    {/* Gallery / image icon */}
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                      <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                    <span>Choose from Gallery</span>
+                  </button>
+                </div>
+              )}
 
               {photoError && (
                 <p className="field-error" role="alert">
