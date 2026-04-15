@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat ~/.claude/plugins/marketplaces/claude-plugins-official/plugins/code-review/commands/*.md)"
+    ]
+  }
+}
