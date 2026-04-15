@@ -1,5 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { vi } from 'vitest';
+
+// PublicMap initialises Leaflet which cannot run in jsdom — use a stub
+vi.mock('./features/public-map/PublicMap', () => ({
+  default: () => <h1>Public Map</h1>,
+}));
+
 import App from './App';
 
 describe('App routing', () => {

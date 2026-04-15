@@ -6,7 +6,7 @@
 - 0006 - As a citizen I want to pick the issue location on an interactive map
 - 0007 - As a citizen I want to optionally provide my contact number so the municipality can follow up
 - 0008 - As a citizen I want to receive a unique tracking code after submitting an issue
-- 0009 - As a citizen I want to see all open issues on a public map
+- ~~0009 - As a citizen I want to see all open issues on a public map~~
 - 0011 - As a citizen I want to click a pin on the map to see issue details
 - 0012 - As a citizen I want to receive an SMS confirmation when my report is received
 - 0013 - As a citizen I want to receive an SMS when the status of my report changes

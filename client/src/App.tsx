@@ -1,5 +1,6 @@
 import { Routes, Route, Link } from 'react-router-dom';
 import IssueForm from './features/issue-submission/IssueForm';
+import PublicMap from './features/public-map/PublicMap';
 
 export default function App() {
   return (
@@ -12,7 +13,7 @@ export default function App() {
         <Link to="/staff/login">Staff Login</Link>
       </nav>
       <Routes>
-        <Route path="/" element={<h1>Public Map</h1>} />
+        <Route path="/" element={<PublicMap />} />
         <Route path="/report" element={<IssueForm />} />
         <Route path="/staff/login" element={<h1>Staff Login</h1>} />
         <Route path="/staff/issues" element={<h1>Issue List</h1>} />
