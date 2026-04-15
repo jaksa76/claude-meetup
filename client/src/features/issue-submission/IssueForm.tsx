@@ -1,13 +1,16 @@
 import { useState, useRef } from 'react';
+import './IssueForm.css';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
 
+// Placeholder values until GPS (story 0005) and description (story 0004) are implemented
+const PLACEHOLDER_LAT = '42.0924';
+const PLACEHOLDER_LNG = '19.0960';
+const PLACEHOLDER_DESC = 'Photo report';
+
 export default function IssueForm() {
-  const [description, setDescription] = useState('');
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoError, setPhotoError] = useState('');
   const [trackingCode, setTrackingCode] = useState('');
@@ -18,23 +21,25 @@ export default function IssueForm() {
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     setPhotoError('');
     const file = e.target.files?.[0] ?? null;
-    if (!file) {
-      setPhoto(null);
-      return;
-    }
+    if (!file) return;
+
     if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
       setPhotoError('Only JPEG and PNG images are allowed.');
-      setPhoto(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
     if (file.size > MAX_BYTES) {
       setPhotoError('Photo must be 5 MB or smaller.');
-      setPhoto(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
     setPhoto(file);
+  }
+
+  function removePhoto() {
+    setPhoto(null);
+    setPhotoError('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -43,9 +48,9 @@ export default function IssueForm() {
     setErrorMessage('');
 
     const body = new FormData();
-    body.append('description', description);
-    body.append('latitude', latitude);
-    body.append('longitude', longitude);
+    body.append('description', PLACEHOLDER_DESC);
+    body.append('latitude', PLACEHOLDER_LAT);
+    body.append('longitude', PLACEHOLDER_LNG);
     if (photo) body.append('photo', photo);
 
     try {
@@ -65,109 +70,94 @@ export default function IssueForm() {
     }
   }
 
-  if (formState === 'success') {
-    return (
-      <div style={{ padding: '1rem' }}>
-        <h2>Issue submitted</h2>
-        <p>Your tracking code:</p>
-        <code style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{trackingCode}</code>
-        <p>Save this code to check the status of your report.</p>
-        <button onClick={() => {
-          setFormState('idle');
-          setDescription('');
-          setLatitude('');
-          setLongitude('');
-          setPhoto(null);
-          setTrackingCode('');
-          if (fileInputRef.current) fileInputRef.current.value = '';
-        }}>
-          Submit another
-        </button>
-      </div>
-    );
+  function reset() {
+    setFormState('idle');
+    setPhoto(null);
+    setPhotoError('');
+    setTrackingCode('');
+    setErrorMessage('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '480px' }}>
-      <h2>Report an Issue</h2>
+    <div className="issue-form-page">
+      <div className="issue-form-card">
+        {formState === 'success' ? (
+          <div className="success-card">
+            <div className="success-icon">✅</div>
+            <h2>Report submitted</h2>
+            <p>Your tracking code</p>
+            <div className="tracking-code">{trackingCode}</div>
+            <p>Save this code to check the status of your report.</p>
+            <button className="another-btn" onClick={reset}>
+              Submit another
+            </button>
+          </div>
+        ) : (
+          <>
+            <h2>Report an Issue</h2>
+            <p className="issue-form-subtitle">Add a photo of the problem you've spotted.</p>
 
-      {/* Photo upload */}
-      <div>
-        <label htmlFor="photo" style={{ display: 'block', marginBottom: '0.25rem' }}>
-          Photo (optional, JPEG or PNG, max 5 MB)
-        </label>
-        <input
-          id="photo"
-          type="file"
-          accept="image/jpeg,image/png"
-          ref={fileInputRef}
-          onChange={handlePhotoChange}
-        />
-        {photo && (
-          <img
-            src={URL.createObjectURL(photo)}
-            alt="Preview"
-            style={{ marginTop: '0.5rem', maxWidth: '100%', maxHeight: '200px', objectFit: 'cover', borderRadius: '4px' }}
-          />
+            <form onSubmit={handleSubmit}>
+              <div className={`photo-zone${photo ? ' has-photo' : ''}`}>
+                <input
+                  id="photo"
+                  type="file"
+                  accept="image/jpeg,image/png"
+                  capture="environment"
+                  ref={fileInputRef}
+                  onChange={handlePhotoChange}
+                  aria-label="Upload a photo"
+                />
+                {photo ? (
+                  <>
+                    <img
+                      className="photo-preview"
+                      src={URL.createObjectURL(photo)}
+                      alt="Preview of selected photo"
+                    />
+                    <div className="photo-preview-bar">
+                      <span className="photo-preview-name">{photo.name}</span>
+                      <button
+                        type="button"
+                        className="photo-remove-btn"
+                        onClick={removePhoto}
+                        aria-label="Remove photo"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="photo-zone-icon" aria-hidden>📷</div>
+                    <div className="photo-zone-label">Tap to add a photo</div>
+                    <div className="photo-zone-hint">JPEG or PNG · max 5 MB</div>
+                  </>
+                )}
+              </div>
+
+              {photoError && (
+                <p className="field-error" role="alert">
+                  ⚠ {photoError}
+                </p>
+              )}
+
+              {formState === 'error' && (
+                <div className="form-error" role="alert">{errorMessage}</div>
+              )}
+
+              <button
+                type="submit"
+                className="submit-btn"
+                disabled={formState === 'submitting'}
+              >
+                {formState === 'submitting' ? 'Submitting…' : 'Submit report'}
+              </button>
+            </form>
+          </>
         )}
-        {photoError && <p style={{ color: 'red', margin: '0.25rem 0 0' }}>{photoError}</p>}
       </div>
-
-      {/* Description */}
-      <div>
-        <label htmlFor="description" style={{ display: 'block', marginBottom: '0.25rem' }}>
-          Description <span aria-hidden>*</span>
-        </label>
-        <textarea
-          id="description"
-          required
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          maxLength={4096}
-          rows={4}
-          style={{ width: '100%', boxSizing: 'border-box' }}
-        />
-      </div>
-
-      {/* Location */}
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <div style={{ flex: 1 }}>
-          <label htmlFor="latitude" style={{ display: 'block', marginBottom: '0.25rem' }}>
-            Latitude <span aria-hidden>*</span>
-          </label>
-          <input
-            id="latitude"
-            type="number"
-            step="any"
-            required
-            value={latitude}
-            onChange={(e) => setLatitude(e.target.value)}
-            style={{ width: '100%', boxSizing: 'border-box' }}
-          />
-        </div>
-        <div style={{ flex: 1 }}>
-          <label htmlFor="longitude" style={{ display: 'block', marginBottom: '0.25rem' }}>
-            Longitude <span aria-hidden>*</span>
-          </label>
-          <input
-            id="longitude"
-            type="number"
-            step="any"
-            required
-            value={longitude}
-            onChange={(e) => setLongitude(e.target.value)}
-            style={{ width: '100%', boxSizing: 'border-box' }}
-          />
-        </div>
-      </div>
-
-      {formState === 'error' && (
-        <p style={{ color: 'red' }}>{errorMessage}</p>
-      )}
-
-      <button type="submit" disabled={formState === 'submitting'}>
-        {formState === 'submitting' ? 'Submitting…' : 'Submit report'}
-      </button>
-    </form>
+    </div>
   );
 }
