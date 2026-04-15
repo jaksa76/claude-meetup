@@ -16,7 +16,7 @@ If `$ARGUMENTS` is provided it is treated as a story ID (e.g. `0003`) and that s
 
 1. Read `docs/TODO.md`.
 2. If `$ARGUMENTS` is non-empty, find the line whose ID matches; otherwise take the topmost line that is **not** prefixed with `~~` (struck-through = done).
-3. Print the selected story so the user can confirm before work starts.
+3. Print the selected story.
 4. Also read `docs/ARCHITECTURE.md` and `docs/REQUIREMENTS.md` to build context.
 
 ---
@@ -35,7 +35,7 @@ If `$ARGUMENTS` is provided it is treated as a story ID (e.g. `0003`) and that s
 
 ## Phase 2 — Implement
 
-Only start after the user approves the plan.
+when ready, proceed with the implementation.
 
 1. Implement backend changes first (routes → service → DB migration if needed), then frontend.
 2. Follow the conventions already present in the codebase (TypeScript, file naming, folder structure, error handling patterns).
@@ -77,15 +77,8 @@ Update documentation only where it adds real value:
 ## Phase 6 — Mark Done & Commit
 
 1. In `docs/TODO.md`, wrap the completed story line with strikethrough: `~~0001 - As a ...~~`.
-2. Stage all changed files (be specific — avoid `git add .` if sensitive files might be present).
-3. Commit with a concise message following the pattern:
-
-   ```
-   feat(#NNNN): <short description matching the story>
-
-   Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
-   ```
-
+2. Stage all changed files inlcudeing `docs/TODO.md` (be specific — avoid `git add .` if sensitive files might be present).
+3. Commit with a concise message
 4. Push the changes if there is a remote repository.
 
 ---
@@ -93,4 +86,3 @@ Update documentation only where it adds real value:
 ## Guardrails
 
 - Never commit without passing tests and lint.
-- Refactor agressively
