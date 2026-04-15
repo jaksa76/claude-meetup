@@ -1,0 +1,29 @@
+0001 - As a citizen I want to submit an issue report without creating an account
+0002 - As a citizen I want to upload a photo of the issue (JPEG/PNG, max 5 MB)
+0003 - As a citizen I want to use my phone camera to take a photo when submitting an issue
+0004 - As a citizen I want to write a free-text description of the issue (up to 4096 characters)
+0005 - As a citizen I want my GPS location to be automatically detected when submitting an issue
+0006 - As a citizen I want to pick the issue location on an interactive map
+0007 - As a citizen I want to optionally provide my contact number so the municipality can follow up
+0008 - As a citizen I want to receive a unique tracking code after submitting an issue
+0009 - As a citizen I want to see all open issues on a public map
+0011 - As a citizen I want to click a pin on the map to see issue details
+0012 - As a citizen I want to receive an SMS confirmation when my report is received
+0013 - As a citizen I want to receive an SMS when the status of my report changes
+0014 - As a citizen I want to receive an SMS when a public note is added to my report
+0017 - As a staff member I want to log in with a username and password
+0018 - As a staff member I want to see a list of all submitted issues
+0019 - As a staff member I want to filter issues by status
+0020 - As a staff member I want to filter issues by date range
+0021 - As a staff member I want to change the status of an issue
+0022 - As a staff member I want to assign a category to an issue
+0010 - As a citizen I want to see issues displayed as color-coded pins by category on the map
+0023 - As a staff member I want to add an internal (private) note to an issue
+0024 - As a staff member I want to add a public note to an issue visible to the reporter
+0025 - As a staff member I want to assign an issue to a department or individual
+0026 - As a staff member I want to close an issue as Resolved with a required comment
+0027 - As a staff member I want to close an issue as Rejected with a required comment
+0028 - As a staff member I want to attach a photo when closing an issue
+0029 - As an admin I want to log in using credentials configured via environment variables
+0030 - As an admin I want to create staff accounts for municipality employees
+0031 - As an admin I want to manage existing staff accounts

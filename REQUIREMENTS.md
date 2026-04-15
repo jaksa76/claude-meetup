@@ -1,4 +1,4 @@
-# Requirements: Public Infrastructure Issue Reporting — Municipality of Bar, Montenegro
+# Requirements: Public Infrastructure Issue Reporting
 
 ## Overview
 
