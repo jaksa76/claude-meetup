@@ -9,7 +9,8 @@
       "Bash(npx tsc *)",
       "Bash(git push *)",
       "Bash(npx playwright *)",
-      "Bash(playwright --version)"
+      "Bash(playwright --version)",
+      "Bash(echo \"EXIT: $?\")"
     ]
   }
 }
