@@ -1,10 +1,10 @@
 - ~~0001 - As a citizen I want to submit an issue report without creating an account~~
 - ~~0002 - As a citizen I want to upload a photo of the issue (JPEG/PNG, max 5 MB)~~
 - ~~0003 - As a citizen I want to use my phone camera to take a photo when submitting an issue~~
-- 0004 - As a citizen I want to write a free-text description of the issue (up to 4096 characters)
-- 0005 - As a citizen I want my GPS location to be automatically detected when submitting an issue
-- 0006 - As a citizen I want to pick the issue location on an interactive map
-- 0007 - As a citizen I want to optionally provide my contact number so the municipality can follow up
+- 0006 - As a citizen when entering an issue I want to pick the issue location on an interactive map
+- 0005 - As a citizen when entering an issue I want my GPS location to be automatically detected when submitting an issue
+- 0004 - As a citizen when entering an issue I want to write a free-text description of the issue (up to 4096 characters)
+- 0007 - As a citizen when entering an issue I want to optionally provide my contact number so the municipality can follow up
 - 0008 - As a citizen I want to receive a unique tracking code after submitting an issue
 - ~~0009 - As a citizen I want to see all open issues on a public map~~
 - 0011 - As a citizen I want to click a pin on the map to see issue details

@@ -6,7 +6,10 @@
       "Bash(npm --version)",
       "Bash(npm install *)",
       "Bash(npm test *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(git push *)",
+      "Bash(npx playwright *)",
+      "Bash(playwright --version)"
     ]
   }
 }
