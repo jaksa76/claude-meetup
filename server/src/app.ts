@@ -12,6 +12,6 @@ app.use(cookieParser());
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
-app.get('/api/hello', (_req, res) => res.json({ message: 'Zdravo Bar!' }));
+app.get('/api/hello', (_req, res) => res.json({ message: 'Zdravo Barani!' }));
 
 export default app;
