@@ -29,13 +29,16 @@ npm run build
 
 ### Infrastructure
 
+Dev uses **SQLite** (no setup needed — `dev.db` is created automatically on first run).
+
+Production uses PostgreSQL via `DATABASE_URL`. To run a local Postgres instance:
 ```bash
-docker-compose up -d   # Start PostgreSQL for local dev
+docker-compose up -d
 ```
 
 ## Architecture
 
-This is a **feature-sliced monorepo**: `client/` (React SPA) and `server/` (Express API), backed by PostgreSQL.
+This is a **feature-sliced monorepo**: `client/` (React SPA) and `server/` (Express API), backed by SQLite in dev and PostgreSQL in production.
 
 ### Backend structure
 
@@ -44,6 +47,7 @@ This is a **feature-sliced monorepo**: `client/` (React SPA) and `server/` (Expr
 - `features/admin/` — admin-protected staff account management
 - `features/auth/` — JWT sign/verify, bcrypt hashing, env-var admin bootstrap
 - `features/notifications/` — SMS dispatch via swappable adapters (`sms.adapter.ts` interface → `twilio`, `d7`)
+- `shared/db.ts` — database access (`db.run`, `db.get`, `db.all`, `db.exec`); SQLite in dev, swap for pg pool in production
 - `shared/middleware/` — `requireAuth` (JWT cookie or Bearer header), `requireAdmin` (role check), `errorHandler`
 
 
@@ -51,7 +55,7 @@ This is a **feature-sliced monorepo**: `client/` (React SPA) and `server/` (Expr
 
 | Variable | Purpose |
 |---|---|
-| `DATABASE_URL` | PostgreSQL connection string |
+| `DATABASE_URL` | PostgreSQL connection string (production only; dev uses SQLite) |
 | `JWT_SECRET` | JWT signing secret (defaults to `dev-secret` in dev) |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | Bootstrap admin account |
 | `CORS_ORIGIN` | Allowed CORS origin (default `http://localhost:5173`) |
