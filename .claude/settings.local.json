@@ -1,16 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cat ~/.claude/plugins/marketplaces/claude-plugins-official/plugins/code-review/commands/*.md)",
-      "Bash(cat /workspaces/issue-reporting/docs/*)",
-      "Bash(npm --version)",
-      "Bash(npm install *)",
-      "Bash(npm test *)",
-      "Bash(npx tsc *)",
-      "Bash(git push *)",
-      "Bash(npx playwright *)",
-      "Bash(playwright --version)",
-      "Bash(echo \"EXIT: $?\")"
+      "Bash"
     ]
   }
 }
