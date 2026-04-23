@@ -63,3 +63,7 @@ The app serves citizens of Bar, Montenegro. UI must support **Montenegrin** (`me
 ## User stories
 
 Unimplemented stories live in `docs/TODO.md` (format: `NNNN - As a … I want to …`).
+
+## Skills
+
+Place new skills in `.claude/skills/<skill-name>/SKILL.md`.
