@@ -236,7 +236,71 @@ body {
 .location-tag {
   font-size: 0.78rem;
   color: #6b7280;
+  margin-bottom: 0;
+}
+
+.location-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin-bottom: 0.75rem;
+}
+
+.adjust-location-btn {
+  font-size: 0.75rem;
+  color: #0071e3;
+  background: none;
+  border: 1px solid #0071e3;
+  border-radius: 6px;
+  padding: 0.15rem 0.5rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.adjust-location-btn:hover {
+  background: #e8f4fd;
+}
+
+/* ── Location picking mode ── */
+.map-picking-mode {
+  cursor: crosshair !important;
+}
+
+.location-picking-hint {
+  position: absolute;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 113, 227, 0.92);
+  color: white;
+  padding: 0.6rem 1rem 0.6rem 1.25rem;
+  border-radius: 24px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 1500;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  pointer-events: all;
+  white-space: nowrap;
+}
+
+.location-picking-cancel {
+  background: rgba(255,255,255,0.25);
+  color: white;
+  border: none;
+  padding: 0.2rem 0.65rem;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.location-picking-cancel:hover {
+  background: rgba(255,255,255,0.4);
 }
 
 /* ── Nav ── */

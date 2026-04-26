@@ -69,7 +69,16 @@ export default function App() {
   const mapInstance = useRef<L.Map | null>(null);
   const [issues, setIssues] = useState<Issue[]>([]);
   const [formCoords, setFormCoords] = useState<{ lat: number; lng: number; approximate: boolean } | null>(null);
+  const [locationPickingActive, setLocationPickingActive] = useState(false);
   const { user, logout } = useAuth();
+
+  function activateLocationPicking() {
+    setLocationPickingActive(true);
+  }
+
+  function deactivateLocationPicking() {
+    setLocationPickingActive(false);
+  }
 
   function openReportForm() {
     if (!navigator.geolocation) {
@@ -116,11 +125,23 @@ export default function App() {
 
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
-    mapInstance.current = L.map(mapRef.current).setView([BAR_LAT, BAR_LNG], 14);
+    const map = L.map(mapRef.current).setView([BAR_LAT, BAR_LNG], 14);
+    mapInstance.current = map;
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    }).addTo(mapInstance.current);
+    }).addTo(map);
   }, []);
+
+  useEffect(() => {
+    const map = mapInstance.current;
+    if (!map || !locationPickingActive) return;
+    function handlePickClick(e: L.LeafletMouseEvent) {
+      setFormCoords({ lat: e.latlng.lat, lng: e.latlng.lng, approximate: false });
+      setLocationPickingActive(false);
+    }
+    map.on('click', handlePickClick);
+    return () => { map.off('click', handlePickClick); };
+  }, [locationPickingActive]);
 
   useEffect(() => {
     const map = mapInstance.current;
@@ -155,16 +176,24 @@ export default function App() {
         )}
       </nav>
       <div style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-        <div ref={mapRef} className="map-container" />
-        <button className="fab" onClick={openReportForm} aria-label="Report an issue">＋</button>
+        <div ref={mapRef} className={`map-container${locationPickingActive ? ' map-picking-mode' : ''}`} />
+        {locationPickingActive && (
+          <div className="location-picking-hint" data-testid="location-picking-hint">
+            <span>Tap on the map to set the location</span>
+            <button className="location-picking-cancel" onClick={deactivateLocationPicking}>Cancel</button>
+          </div>
+        )}
+        {!locationPickingActive && <button className="fab" onClick={openReportForm} aria-label="Report an issue">＋</button>}
       </div>
       {formCoords && (
         <ReportForm
           lat={formCoords.lat}
           lng={formCoords.lng}
           approximate={formCoords.approximate}
-          onClose={() => setFormCoords(null)}
-          onSubmitted={() => { setFormCoords(null); loadIssues(); }}
+          onClose={() => { setFormCoords(null); deactivateLocationPicking(); }}
+          onSubmitted={() => { setFormCoords(null); deactivateLocationPicking(); loadIssues(); }}
+          onAdjustLocation={activateLocationPicking}
+          hidden={locationPickingActive}
         />
       )}
     </>

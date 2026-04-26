@@ -6,9 +6,11 @@ interface Props {
   approximate: boolean;
   onClose: () => void;
   onSubmitted: () => void;
+  onAdjustLocation: () => void;
+  hidden?: boolean;
 }
 
-export default function ReportForm({ lat, lng, approximate, onClose, onSubmitted }: Props) {
+export default function ReportForm({ lat, lng, approximate, onClose, onSubmitted, onAdjustLocation, hidden }: Props) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [phone, setPhone] = useState('');
@@ -56,7 +58,7 @@ export default function ReportForm({ lat, lng, approximate, onClose, onSubmitted
   }
 
   return (
-    <div className="report-overlay" onClick={onClose}>
+    <div className="report-overlay" onClick={onClose} style={hidden ? { display: 'none' } : undefined}>
       <div className="report-panel" onClick={e => e.stopPropagation()}>
         <div className="report-header">
           <h2>Report an Issue</h2>
@@ -119,11 +121,21 @@ export default function ReportForm({ lat, lng, approximate, onClose, onSubmitted
           />
           <p className="field-hint">We'll send you an SMS when your report is resolved.</p>
 
-          <p className="location-tag" data-testid="location-tag">
-            {approximate
-              ? '⚠ Using approximate location (GPS unavailable)'
-              : `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`}
-          </p>
+          <div className="location-row">
+            <p className="location-tag" data-testid="location-tag">
+              {approximate
+                ? '⚠ Using approximate location (GPS unavailable)'
+                : `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`}
+            </p>
+            <button
+              type="button"
+              className="adjust-location-btn"
+              data-testid="adjust-location-btn"
+              onClick={onAdjustLocation}
+            >
+              {approximate ? 'Set on map' : 'Change'}
+            </button>
+          </div>
 
           {error && <p className="form-error">{error}</p>}
 
