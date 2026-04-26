@@ -81,13 +81,12 @@ export default function App() {
   }
 
   function openReportForm() {
-    if (!navigator.geolocation) {
-      setFormCoords({ lat: BAR_LAT, lng: BAR_LNG, approximate: true });
-      return;
-    }
+    // Open immediately with approximate location so there's no delay
+    setFormCoords({ lat: BAR_LAT, lng: BAR_LNG, approximate: true });
+    if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
       pos => setFormCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude, approximate: false }),
-      ()  => setFormCoords({ lat: BAR_LAT, lng: BAR_LNG, approximate: true }),
+      () => { /* keep approximate */ },
       { timeout: 8000, maximumAge: 60000 },
     );
   }
