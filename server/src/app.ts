@@ -7,6 +7,7 @@ import issuesRouter from './features/issues/issues.router.js';
 import { initIssuesTable, resetIssuesForTest } from './features/issues/issues.service.js';
 import authRouter from './features/auth/auth.router.js';
 import { initStaffTable } from './features/auth/auth.service.js';
+import adminRouter from './features/admin/admin.router.js';
 
 const app = express();
 
@@ -29,5 +30,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 app.use('/api/issues', issuesRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/admin', adminRouter);
 
 export default app;

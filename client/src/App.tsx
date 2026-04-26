@@ -161,6 +161,7 @@ export default function App() {
         <strong style={{ marginRight: 'auto', fontSize: '0.95rem' }}>Bar – Citizen Issues</strong>
         {user ? (
           <>
+            {user.role === 'admin' && <Link to="/admin">Admin</Link>}
             <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>{user.username}</span>
             <div className="app-nav-divider" />
             <button
