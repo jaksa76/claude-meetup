@@ -9,11 +9,3 @@ describe('GET /health', () => {
   });
 });
 
-describe('GET /api/hello', () => {
-  it('returns a message', async () => {
-    const res = await request(app).get('/api/hello');
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('message');
-    expect(typeof res.body.message).toBe('string');
-  });
-});

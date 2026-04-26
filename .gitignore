@@ -1,4 +1,10 @@
 node_modules/
 dist/
 client/node_modules/
+server/uploads/
+server/*.db
+server/*.db-shm
+server/*.db-wal
+e2e/screenshots/
+.claude/scheduled_tasks.lock
 
