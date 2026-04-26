@@ -4,7 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import issuesRouter from './features/issues/issues.router.js';
-import { initIssuesTable } from './features/issues/issues.service.js';
+import { initIssuesTable, resetIssuesForTest } from './features/issues/issues.service.js';
 import authRouter from './features/auth/auth.router.js';
 import { initStaffTable } from './features/auth/auth.service.js';
 
@@ -20,6 +20,13 @@ initIssuesTable();
 initStaffTable();
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
+
+if (process.env.NODE_ENV !== 'production') {
+  app.post('/api/test/reset', (_req, res) => {
+    resetIssuesForTest();
+    res.json({ ok: true });
+  });
+}
 app.use('/api/issues', issuesRouter);
 app.use('/api/auth', authRouter);
 

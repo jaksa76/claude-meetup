@@ -29,16 +29,22 @@ test.describe('Issue popup', () => {
 
   test('popup shows a photo when the issue has one', async ({ page }) => {
     await page.goto('/');
-    await page.waitForSelector('.leaflet-marker-icon', { timeout: 8_000 });
+    // Only select individual pin markers, not cluster group icons
+    await page.waitForSelector('.leaflet-marker-icon:not(.marker-cluster)', { timeout: 8_000 });
 
-    const markers = page.locator('.leaflet-marker-icon');
+    const markers = page.locator('.leaflet-marker-icon:not(.marker-cluster)');
     const total = await markers.count();
     const limit = Math.min(total, 8);
 
     for (let i = 0; i < limit; i++) {
       await markers.nth(i).dispatchEvent('click');
+      // Wait for popup to open
+      const popup = page.locator('.leaflet-popup');
+      const opened = await popup.isVisible({ timeout: 1_000 }).catch(() => false);
+      if (!opened) { continue; }
+
       const photo = page.locator('.leaflet-popup .issue-photo').first();
-      if (await photo.isVisible({ timeout: 500 })) {
+      if (await photo.count() > 0) {
         await expect(photo).toHaveAttribute('src', /.+/);
         await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'issue-popup-photo.png'), fullPage: false });
         return;

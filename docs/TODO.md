@@ -6,7 +6,7 @@
 0006 - As a citizen I want to enter my phone number when submitting a report so that I can receive an SMS when the status of my issue changes ✓
 0007 - As a citizen I want to upvote an existing issue so that municipality staff can prioritise the problems that matter most to the community ✓
 0009 - As a municipality employee I want to log in with my staff account so that I can access the internal management tools ✓
-0018 - As a citizen I want to see overlapping issues clustered on the map with a count so that I can understand how many reports exist in a specific area without pins obscuring each other
+0018 - As a citizen I want to see overlapping issues clustered on the map with a count so that I can understand how many reports exist in a specific area without pins obscuring each other ✓
 0016 - As a citizen I want to be able to manually specify the location of an issue on the map in case my GPS coordinates are inaccurate or I am reporting on behalf of someone else
 0014 - As an administrator I want to create municipality employee accounts so that staff can access the management dashboard
 0011 - As a municipality employee I want to change the status of an issue (New → In Progress → Resolved) so that citizens are kept informed about progress

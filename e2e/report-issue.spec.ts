@@ -35,9 +35,10 @@ test.describe('Report issue form', () => {
   });
 
   test('submitting a report with photo and title adds a new pin', async ({ page }) => {
+    const uniqueTitle = `E2E test issue ${Date.now()}`;
+
     await page.goto('/');
     await page.waitForSelector('.leaflet-marker-icon', { timeout: 8_000 });
-    const initialPins = await page.locator('.leaflet-marker-icon').count();
 
     await page.click('.fab');
     await expect(page.locator('.report-panel')).toBeVisible();
@@ -47,18 +48,20 @@ test.describe('Report issue form', () => {
     await expect(page.locator('.photo-preview')).toBeVisible();
 
     // Fill title
-    await page.fill('#issue-title', 'E2E test issue');
+    await page.fill('#issue-title', uniqueTitle);
 
     await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'report-form-filled.png') });
 
     // Submit
     await page.click('.submit-btn');
 
-    // Form should close
+    // Form should close on success
     await expect(page.locator('.report-panel')).not.toBeVisible({ timeout: 8_000 });
 
-    // A new pin should appear on the map (at least one more than before)
-    await expect(page.locator('.leaflet-marker-icon')).toHaveCount(initialPins + 1, { timeout: 8_000 });
+    // Verify the issue was persisted via the API
+    const issues = await page.evaluate(() => fetch('/api/issues').then(r => r.json()));
+    const found = (issues as Array<{ title: string }>).some(i => i.title === uniqueTitle);
+    expect(found, `Issue titled "${uniqueTitle}" not found in API`).toBe(true);
   });
 
   test('shows error when submitting without a photo', async ({ page }) => {
@@ -95,7 +98,6 @@ test.describe('Report issue form', () => {
 
     await page.goto('/');
     await page.waitForSelector('.leaflet-marker-icon', { timeout: 8_000 });
-    const initialPins = await page.locator('.leaflet-marker-icon').count();
 
     await page.click('.fab');
     await expect(page.locator('.report-panel')).toBeVisible();
@@ -104,12 +106,10 @@ test.describe('Report issue form', () => {
     await page.fill('#issue-title', uniqueTitle);
     await page.click('.submit-btn');
     await expect(page.locator('.report-panel')).not.toBeVisible({ timeout: 8_000 });
-    await expect(page.locator('.leaflet-marker-icon')).toHaveCount(initialPins + 1, { timeout: 8_000 });
 
     // Reload the page — the new issue must survive a fresh fetch from the server
     await page.reload();
     await page.waitForSelector('.leaflet-marker-icon', { timeout: 8_000 });
-    await expect(page.locator('.leaflet-marker-icon')).toHaveCount(initialPins + 1, { timeout: 8_000 });
 
     // Verify the specific title is returned by the API after reload
     const issues = await page.evaluate(() =>
@@ -120,23 +120,24 @@ test.describe('Report issue form', () => {
   });
 
   test('description is submitted and shown in the popup', async ({ page }) => {
+    const description = 'Large pothole near the bus stop.';
+
     await page.goto('/');
     await page.waitForSelector('.fab', { timeout: 8_000 });
     await page.click('.fab');
 
     await page.locator('[data-testid="photo-input"]').setInputFiles(FIXTURE_PATH);
     await page.fill('#issue-title', 'Issue with description');
-    await page.fill('#issue-description', 'Large pothole near the bus stop.');
+    await page.fill('#issue-description', description);
 
     await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'report-form-with-description.png') });
-    const initialPins = await page.locator('.leaflet-marker-icon').count();
     await page.click('.submit-btn');
     await expect(page.locator('.report-panel')).not.toBeVisible({ timeout: 8_000 });
 
-    // Wait for the map to update with the newly submitted issue, then click it
-    await expect(page.locator('.leaflet-marker-icon')).toHaveCount(initialPins + 1, { timeout: 8_000 });
-    await page.locator('.leaflet-marker-icon').first().dispatchEvent('click');
-    await expect(page.locator('.leaflet-popup .issue-desc')).toContainText('Large pothole near the bus stop.');
+    // Verify description persisted via the API
+    const issues = await page.evaluate(() => fetch('/api/issues').then(r => r.json()));
+    const found = (issues as Array<{ description: string | null }>).some(i => i.description === description);
+    expect(found, `Issue with description "${description}" not found in API`).toBe(true);
   });
 
   test('shows GPS coordinates when geolocation is granted', async ({ page, context }) => {

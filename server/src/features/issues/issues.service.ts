@@ -50,19 +50,30 @@ export function initIssuesTable() {
 
   const count = db.get<{ n: number }>('SELECT COUNT(*) as n FROM issues');
   if (count && count.n === 0) {
-    const seed = [
-      { id: '1', title: 'Potholes on Jovana Tomaševića', lat: 42.0939, lng: 19.1003, status: 'new', photo_url: 'https://picsum.photos/seed/issue1/400/240' },
-      { id: '2', title: 'Broken street light near the port', lat: 42.0891, lng: 19.0961, status: 'in_progress', photo_url: 'https://picsum.photos/seed/issue2/400/240' },
-      { id: '3', title: 'Illegal dumping in Topolica park', lat: 42.0975, lng: 19.1052, status: 'new', photo_url: 'https://picsum.photos/seed/issue3/400/240' },
-      { id: '4', title: 'Damaged pavement on Maršala Tita', lat: 42.0921, lng: 19.0987, status: 'resolved', photo_url: null },
-      { id: '5', title: 'Overflowing bin at bus station', lat: 42.0908, lng: 19.1021, status: 'new', photo_url: 'https://picsum.photos/seed/issue5/400/240' },
-    ];
-    for (const s of seed) {
+    for (const s of SEED_ISSUES) {
       db.run(
         'INSERT INTO issues (id, title, lat, lng, status, photo_url) VALUES ($1, $2, $3, $4, $5, $6)',
         [s.id, s.title, s.lat, s.lng, s.status, s.photo_url],
       );
     }
+  }
+}
+
+const SEED_ISSUES = [
+  { id: '1', title: 'Potholes on Jovana Tomaševića', lat: 42.0939, lng: 19.1003, status: 'new', photo_url: 'https://picsum.photos/seed/issue1/400/240' },
+  { id: '2', title: 'Broken street light near the port', lat: 42.0891, lng: 19.0961, status: 'in_progress', photo_url: 'https://picsum.photos/seed/issue2/400/240' },
+  { id: '3', title: 'Illegal dumping in Topolica park', lat: 42.0975, lng: 19.1052, status: 'new', photo_url: 'https://picsum.photos/seed/issue3/400/240' },
+  { id: '4', title: 'Damaged pavement on Maršala Tita', lat: 42.0921, lng: 19.0987, status: 'resolved', photo_url: null },
+  { id: '5', title: 'Overflowing bin at bus station', lat: 42.0908, lng: 19.1021, status: 'new', photo_url: 'https://picsum.photos/seed/issue5/400/240' },
+] as const;
+
+export function resetIssuesForTest() {
+  db.exec('DELETE FROM issues');
+  for (const s of SEED_ISSUES) {
+    db.run(
+      'INSERT INTO issues (id, title, lat, lng, status, photo_url) VALUES ($1, $2, $3, $4, $5, $6)',
+      [s.id, s.title, s.lat, s.lng, s.status, s.photo_url],
+    );
   }
 }
 

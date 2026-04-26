@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import ReportForm from './ReportForm';
 import { useAuth } from './AuthContext';
 
@@ -122,12 +125,14 @@ export default function App() {
   useEffect(() => {
     const map = mapInstance.current;
     if (!map) return;
-    const markers = issues.map(issue =>
+    const cluster = L.markerClusterGroup({ chunkedLoading: true });
+    issues.forEach(issue => {
       L.marker([issue.lat, issue.lng], { icon: makeIcon(issue.status) })
-        .addTo(map)
-        .bindPopup(buildPopupHtml(issue), { maxWidth: 280 }),
-    );
-    return () => { markers.forEach(m => m.remove()); };
+        .bindPopup(buildPopupHtml(issue), { maxWidth: 280 })
+        .addTo(cluster);
+    });
+    map.addLayer(cluster);
+    return () => { map.removeLayer(cluster); };
   }, [issues]);
 
   return (
