@@ -45,8 +45,11 @@ export default function ReportForm({ lat, lng, approximate, onClose, onSubmitted
     try {
       const res = await fetch('/api/issues', { method: 'POST', body });
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.error ?? 'Submission failed.');
+        const text = await res.text();
+        let msg = 'Submission failed.';
+        try { msg = (JSON.parse(text) as { error?: string }).error ?? msg; } catch { /* non-JSON body (e.g. nginx 413) */ }
+        if (res.status === 413) msg = 'Photo is too large. Please choose a smaller image.';
+        setError(msg);
         return;
       }
       onSubmitted();
