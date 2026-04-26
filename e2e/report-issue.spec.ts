@@ -90,6 +90,35 @@ test.describe('Report issue form', () => {
     expect(pageText).not.toContain('+382 67 123 456');
   });
 
+  test('submitted issue persists after page reload', async ({ page }) => {
+    const uniqueTitle = `Persistence test ${Date.now()}`;
+
+    await page.goto('/');
+    await page.waitForSelector('.leaflet-marker-icon', { timeout: 8_000 });
+    const initialPins = await page.locator('.leaflet-marker-icon').count();
+
+    await page.click('.fab');
+    await expect(page.locator('.report-panel')).toBeVisible();
+
+    await page.locator('[data-testid="photo-input"]').setInputFiles(FIXTURE_PATH);
+    await page.fill('#issue-title', uniqueTitle);
+    await page.click('.submit-btn');
+    await expect(page.locator('.report-panel')).not.toBeVisible({ timeout: 8_000 });
+    await expect(page.locator('.leaflet-marker-icon')).toHaveCount(initialPins + 1, { timeout: 8_000 });
+
+    // Reload the page — the new issue must survive a fresh fetch from the server
+    await page.reload();
+    await page.waitForSelector('.leaflet-marker-icon', { timeout: 8_000 });
+    await expect(page.locator('.leaflet-marker-icon')).toHaveCount(initialPins + 1, { timeout: 8_000 });
+
+    // Verify the specific title is returned by the API after reload
+    const issues = await page.evaluate(() =>
+      fetch('/api/issues').then(r => r.json()),
+    );
+    const found = (issues as Array<{ title: string }>).some(i => i.title === uniqueTitle);
+    expect(found, `Issue titled "${uniqueTitle}" not found in API response after reload`).toBe(true);
+  });
+
   test('description is submitted and shown in the popup', async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('.fab', { timeout: 8_000 });
@@ -100,13 +129,13 @@ test.describe('Report issue form', () => {
     await page.fill('#issue-description', 'Large pothole near the bus stop.');
 
     await page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'report-form-with-description.png') });
+    const initialPins = await page.locator('.leaflet-marker-icon').count();
     await page.click('.submit-btn');
     await expect(page.locator('.report-panel')).not.toBeVisible({ timeout: 8_000 });
 
-    // Click the newest pin and verify description appears
-    const markers = page.locator('.leaflet-marker-icon');
-    await page.waitForSelector('.leaflet-marker-icon', { timeout: 5_000 });
-    await markers.first().dispatchEvent('click');
+    // Wait for the map to update with the newly submitted issue, then click it
+    await expect(page.locator('.leaflet-marker-icon')).toHaveCount(initialPins + 1, { timeout: 8_000 });
+    await page.locator('.leaflet-marker-icon').first().dispatchEvent('click');
     await expect(page.locator('.leaflet-popup .issue-desc')).toContainText('Large pothole near the bus stop.');
   });
 
