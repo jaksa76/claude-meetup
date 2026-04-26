@@ -8,3 +8,4 @@ server/*.db-wal
 e2e/screenshots/
 .claude/scheduled_tasks.lock
 
+test-results/
