@@ -15,7 +15,7 @@ The process has four phases: **Plan → Implement → Test → Refactor**. Work 
 
 ### Identify the story
 
-If the user gave you a story number (e.g. `0003`) or a description, find it in `docs/TODO.md`. Read the full file to understand neighbouring stories and avoid duplicate work.
+If the user gave you a story number (e.g. `0003`) or a description, find it in `docs/TODO.md`. Read the full file to understand neighbouring stories and avoid duplicate work. Otherwise take the first unimplemented story in the `docs/TODO.md` backlog.
 
 ### Read the codebase
 
@@ -25,11 +25,9 @@ Before writing a single line, understand what already exists. Read:
 - `client/src/App.tsx` and related components
 - Existing tests in `server/src/` (Jest, supertest) and `e2e/` (Playwright)
 
-Look for patterns — how routes are registered, how the DB is accessed, how the client fetches data — and follow them exactly.
-
 ### Write the plan
 
-Present a short plan to the user before touching any code. The plan should cover:
+Make a plan before touching any code. The plan should cover:
 
 1. **What changes on the server** — new table columns, new endpoints, changes to existing endpoints
 2. **What changes on the client** — new components, modified views, new fetch calls
@@ -37,11 +35,9 @@ Present a short plan to the user before touching any code. The plan should cover
 4. **E2e tests** — what Playwright scenarios will exercise the feature end to end
 5. **Anything you're unsure about** — ask the user to clarify before continuing
 
-Wait for the user to confirm the plan or ask for changes before moving to Phase 2.
-
 ---
 
-## Phase 2 — Implement
+## Phase 2 — Implement and Test
 
 Follow the architecture in `CLAUDE.md`:
 - Features live in `server/src/features/<feature-name>/` with a `*.router.ts` and `*.service.ts`
@@ -53,11 +49,7 @@ Follow the architecture in `CLAUDE.md`:
 
 Write the minimum code that satisfies the story. No speculative features.
 
----
-
-## Phase 3 — Test
-
-Write tests **after** implementation so you know exactly what the code does. Tests should exercise real behaviour, not mock the database.
+Write tests as you write the implementation so you know exactly what the code does. Tests should exercise real behaviour, not mock the database.
 
 ### Unit tests (Jest + supertest)
 
@@ -75,7 +67,9 @@ cd server && npm test
 
 Fix any failures before continuing.
 
-### E2e tests (Playwright)
+---
+
+## Phase 3 — E2e tests (Playwright)
 
 Place test files in `e2e/<feature-name>.spec.ts`.
 
@@ -83,6 +77,8 @@ Cover:
 - The core user journey described in the story
 - At least one screenshot saved to `e2e/screenshots/`
 - Any error or empty-state scenario that a citizen or staff member would encounter
+- use the e2e tests to take screenshots
+- look at the screenshot of the happy path test and ask yourself: does this look good? If not, improve the implementation and re-run the tests until it does
 
 Run after writing:
 ```bash
@@ -95,13 +91,13 @@ Fix any failures before continuing.
 
 ## Phase 4 — Refactor
 
-Once all tests are green, look at everything you just wrote with fresh eyes. Ask:
+Once all tests are green, look at everything you just wrote with fresh eyes (use subagent). Ask:
 
-- Is there any duplication that can be extracted into a shared helper?
-- Are there any names (variables, functions, routes) that are unclear?
-- Is any file doing too much? Could the router and service be split more cleanly?
+- Is any file doing too much or some functionality spread across too many files? Could the router and service be split more cleanly?
 - Are there any dead imports or unused variables?
-- Could any complex conditional be simplified?
+- Could any complex mechanism be simplified?
+- Is there any other technical debt in the touched files that you can fix while you're here?
+- Are there any security flaws?
 
 Make the improvements. Re-run both test suites after refactoring to confirm nothing broke:
 ```bash
@@ -111,12 +107,23 @@ npx playwright test e2e/<feature-name>.spec.ts
 
 ---
 
+## Phase 5 - Document
+
+- update `docs/TODO.md` to mark the story as implemented (append `✓` to the line)
+- update `docs/ARCHITECTURE.md` if you added any new architectural patterns or conventions
+- update `CLAUDE.md` if you added any useul tips or reminders for future implementers
+
+---
+
+## Phase 6 - Commit and Push
+
+- Commit with a short message like `user profile page` and push to the main branch.
+
+---
+
 ## Finishing up
 
 Report back to the user with:
 - A one-sentence summary of what was built
 - The files that were created or modified
 - Test results (pass counts for both Jest and Playwright)
-- Any follow-on stories that this implementation unlocks or relates to
-
-Mark the story as done by appending ` ✓` to its line in `docs/TODO.md`.
